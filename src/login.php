@@ -45,11 +45,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Calculate total marks
                 $total_marks = array_sum(array_column($student_marks, 'marks'));
 
-                // Store data in session
-                $_SESSION['student_data'] = $student_data;
-                $_SESSION['student_marks'] = $student_marks;
-                $_SESSION['total_marks'] = $total_marks;
-
+                // Store only essential authentication info in session
+                $_SESSION['student_id'] = $student_data['id'];
+                $_SESSION['student_class'] = $student_data['class'];
+                
                 // Set the authentication flag
                 $_SESSION['loggedin'] = true;
 

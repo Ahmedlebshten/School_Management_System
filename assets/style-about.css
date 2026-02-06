@@ -1,0 +1,85 @@
+/**
+ * About Page Styles
+ */
+
+.container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-left: 4px solid var(--primary-color);
+    border-radius: var(--border-radius);
+}
+
+.section h2 {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.section p {
+    line-height: 1.8;
+    color: var(--dark-text);
+    margin: 10px 0;
+}
+
+.section ul {
+    list-style-position: inside;
+    padding-left: 20px;
+}
+
+.section ul li {
+    margin-bottom: 10px;
+    line-height: 1.8;
+    color: var(--dark-text);
+}
+
+.section ul li:before {
+    content: "✓ ";
+    color: var(--success-color);
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        margin: 20px auto;
+        padding: 15px;
+    }
+
+    .section {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .section h2 {
+        font-size: 1.5rem;
+    }
+
+    .section p {
+        font-size: 0.95rem;
+    }
+}
+
+/* Animations */
+.section {
+    animation: fadeInUp 0.5s ease-in-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

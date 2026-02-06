@@ -1,53 +1,112 @@
+/**
+ * Home Page Styles
+ */
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     margin: 0;
     padding: 0;
-}
-
-header {
-    background-color: #2c3e50;
-    color: #fff;
-    padding: 15px 20px;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-nav {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-
-nav a {
-    color: #fff;
-    text-decoration: none;
-    font-size: 18px;
-    padding: 8px 16px;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-}
-
-nav a:hover {
-    background-color: #34495e;
+    min-height: 100vh;
 }
 
 .container {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 20px auto;
-    background-color: #fff;
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 40px;
+    background-color: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .welcome-message {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
+    padding: 30px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
+    color: white;
+    border-radius: 8px;
 }
 
 .welcome-message h1 {
-    color: #2c3e50;
+    font-size: 2.5rem;
+    margin: 0 0 15px 0;
+}
+
+.welcome-message p {
+    font-size: 1.1rem;
+    margin: 0;
+    opacity: 0.95;
+}
+
+.info {
+    background-color: #f9f9f9;
+    padding: 30px;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.info h2 {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    margin-top: 0;
+}
+
+.info p {
+    color: var(--dark-text);
+    line-height: 1.8;
+    font-size: 1rem;
+}
+
+.info a {
+    display: inline-block;
+    margin-top: 20px;
+}
+
+/* Animations */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.welcome-message,
+.info {
+    animation: slideInUp 0.6s ease-out;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .welcome-message {
+        padding: 20px;
+    }
+
+    .welcome-message h1 {
+        font-size: 1.8rem;
+    }
+
+    .welcome-message p {
+        font-size: 1rem;
+    }
+
+    .info {
+        padding: 20px;
+    }
+
+    .info h2 {
+        font-size: 1.5rem;
+    }
+}
 }
 
 .welcome-message p {

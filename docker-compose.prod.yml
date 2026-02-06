@@ -1,0 +1,97 @@
+# ============================================================
+# Docker Compose Production Configuration
+# 
+# Production-optimized configuration for deployment
+# DO NOT USE FOR LOCAL DEVELOPMENT
+# 
+# Usage:
+# docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# ============================================================
+
+version: '3.8'
+
+services:
+  app:
+    # Disable debug in production
+    environment:
+      APP_ENV: production
+      APP_DEBUG: 'false'
+    
+    # Set resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '1'
+          memory: 512M
+    
+    # Restart policy
+    restart_policy:
+      condition: on-failure
+      delay: 5s
+      max_attempts: 5
+      window: 120s
+    
+    # NO volume mounts in production
+    # Application is built into the image
+    volumes: []
+    
+    # Production logging
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 3
+        labels: "environment=production,app=school-system"
+
+  db:
+    # Set resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+    
+    # Restart policy
+    restart_policy:
+      condition: on-failure
+      delay: 5s
+      max_attempts: 5
+      window: 120s
+    
+    # Volume for persistent data only
+    volumes:
+      - db-data:/var/lib/mysql
+    
+    # Production logging
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 3
+        labels: "environment=production,app=school-system-db"
+
+volumes:
+  db-data:
+    driver: local
+
+# ============================================================
+# Production Checklist:
+# 
+# ☐ .env file with production secrets (NOT in repo)
+# ☐ Database backups automated and tested
+# ☐ SSL certificates configured
+# ☐ Health checks enabled and verified
+# ☐ Logging aggregation configured
+# ☐ Monitoring and alerting active
+# ☐ Resource limits appropriate for expected load
+# ☐ Restart policies configured
+# ☐ Network isolation configured
+# ☐ Database user permissions restricted
+# 
+# ============================================================

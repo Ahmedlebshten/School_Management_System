@@ -1,11 +1,36 @@
 <?php 
 
 require(__DIR__ . '/auth.php');
+include 'connection.php';
 
-// Fetch session data
-$student_data = $_SESSION['student_data'];
-$student_marks = $_SESSION['student_marks'];
-$total_marks = $_SESSION['total_marks'] ?? 0;
+// Get student ID from session
+$student_id = $_SESSION['student_id'];
+$student_class = $_SESSION['student_class'];
+
+// Fetch fresh student data from database
+$sql = "SELECT * FROM student_data WHERE id = :id";
+$stmt = $conn->prepare($sql);
+$stmt->bindParam(':id', $student_id, PDO::PARAM_INT);
+$stmt->execute();
+$student_data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Determine table name based on student ID
+if ($student_id == 1) {
+    $table_name = 'ahmed';
+} elseif ($student_id == 2) {
+    $table_name = 'mohamed';
+} else {
+    $table_name = 'student_marks';
+}
+
+// Fetch ALL marks data from database
+$sql = "SELECT * FROM $table_name";
+$stmt = $db->prepare($sql);
+$stmt->execute();
+$student_marks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Calculate total marks
+$total_marks = array_sum(array_column($student_marks, 'marks'));
 
 ?>
 

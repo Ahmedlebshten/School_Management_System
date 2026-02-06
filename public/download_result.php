@@ -1,45 +1,56 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../app/bootstrap.php';
 
+use App\Classes\Auth;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-session_start();
-include 'connection.php';
+Auth::requireLogin();
+
+// ============================================
+// DIRECT PDO CONNECTION (Same as test-db.php)
+// ============================================
+try {
+    $pdo = new PDO('mysql:host=db;dbname=school', 'root', 'password');
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Database connection failed: " . $e->getMessage());
+}
 
 // Get student ID from session
-$student_id = $_SESSION['student_id'] ?? null;
-$student_class = $_SESSION['student_class'] ?? null;
-
-if (!$student_id || !$student_class) {
-    echo "No data available for download.";
-    exit();
-}
+$student_id = $_SESSION['student_id'];
+$student_class = $_SESSION['student_class'];
 
 // Fetch fresh student data from database
 $sql = "SELECT * FROM student_data WHERE id = :id";
-$stmt = $conn->prepare($sql);
+$stmt = $pdo->prepare($sql);
 $stmt->bindParam(':id', $student_id, PDO::PARAM_INT);
 $stmt->execute();
 $student_data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Determine table name based on student ID
-if ($student_id == 1) {
-    $table_name = 'ahmed';
-} elseif ($student_id == 2) {
-    $table_name = 'mohamed';
-} else {
-    $table_name = 'student_marks';
+// Determine table name based on class
+$classMap = [
+    'first' => 'ahmed',
+    'second' => 'mohamed',
+];
+$table_name = $classMap[strtolower($student_class)] ?? 'student_marks';
+
+// FETCH ALL MARKS (DIRECT QUERY - Same as test-db.php)
+$result = $pdo->query('SELECT * FROM ' . $table_name);
+$student_marks = $result->fetchAll(PDO::FETCH_ASSOC);
+
+// Calculate total marks by looping through ALL rows
+$total_marks = 0;
+foreach ($student_marks as $mark) {
+    if (isset($mark['marks'])) {
+        $total_marks += (int)$mark['marks'];
+    }
 }
 
-// Fetch ALL marks data from database
-$sql = "SELECT * FROM $table_name";
-$stmt = $db->prepare($sql);
-$stmt->execute();
-$student_marks = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Calculate total marks
-$total_marks = array_sum(array_column($student_marks, 'marks')) ?? 0;
+if (empty($student_marks) || empty($student_data)) {
+    die("No data available for download.");
+}
 
 try {
     // Create spreadsheet
@@ -78,35 +89,41 @@ try {
     // Headers
     $row = 7;
     $headers = ['ID', 'Subject', 'Marks', 'Percentage'];
+    $columns = ['A', 'B', 'C', 'D'];
     foreach ($headers as $col => $header) {
-        $sheet->setCellValueByColumnAndRow($col + 1, $row, $header);
-        $sheet->getStyle(chr(65 + $col) . $row)->getFont()->setBold(true);
-        $sheet->getStyle(chr(65 + $col) . $row)->getFill()->setFillType('solid')->getStartColor()->setARGB('FFC0DCFF');
+        $sheet->setCellValue($columns[$col] . $row, $header);
+        $sheet->getStyle($columns[$col] . $row)->getFont()->setBold(true);
+        $sheet->getStyle($columns[$col] . $row)->getFill()->setFillType('solid')->getStartColor()->setARGB('FFC0DCFF');
     }
 
     // Data rows
     $row = 8;
     foreach ($student_marks as $mark) {
-        $sheet->setCellValueByColumnAndRow(1, $row, $mark['id']);
-        $sheet->setCellValueByColumnAndRow(2, $row, $mark['subject']);
-        $sheet->setCellValueByColumnAndRow(3, $row, $mark['marks']);
+        $sheet->setCellValue('A' . $row, $mark['id']);
+        $sheet->setCellValue('B' . $row, $mark['subject']);
+        $sheet->setCellValue('C' . $row, $mark['marks']);
         $percentage = isset($mark['percentage']) ? $mark['percentage'] : (isset($mark['percntage']) ? $mark['percntage'] : '0');
-        $sheet->setCellValueByColumnAndRow(4, $row, $percentage);
+        $sheet->setCellValue('D' . $row, $percentage);
         $row++;
     }
 
     // Total row
-    $sheet->setCellValueByColumnAndRow(1, $row, 'Total');
+    $sheet->setCellValue('A' . $row, 'Total');
     $sheet->mergeCells('A' . $row . ':C' . $row);
     $sheet->getStyle('A' . $row . ':D' . $row)->getFont()->setBold(true);
     $sheet->getStyle('A' . $row . ':D' . $row)->getFill()->setFillType('solid')->getStartColor()->setARGB('FFE6E6E6');
-    $sheet->setCellValueByColumnAndRow(4, $row, $total_marks . ' / 400');
+    $sheet->setCellValue('D' . $row, $total_marks . ' / 400');
 
-    // Generate Excel file
+    // Clear output buffer
+    if (ob_get_length()) {
+        ob_end_clean();
+    }
+
+    // Generate Excel file with proper headers
     $writer = new Xlsx($spreadsheet);
     
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header('Content-Disposition: attachment; filename="result_' . time() . '.xlsx"');
+    header('Content-Disposition: attachment; filename="student_result_' . date('YmdHis') . '.xlsx"');
     header('Cache-Control: no-cache, no-store, must-revalidate');
     header('Pragma: no-cache');
     header('Expires: 0');
@@ -115,6 +132,5 @@ try {
     exit();
 
 } catch (Exception $e) {
-    echo "Error generating file: " . $e->getMessage();
-    exit();
+    die("Error generating Excel file: " . $e->getMessage());
 }

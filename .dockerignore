@@ -1,0 +1,94 @@
+# ============================================================
+# Docker Build Context Exclusions
+# 
+# Prevents sensitive files from being sent to Docker daemon
+# This speeds up builds and prevents accidental inclusion
+# ============================================================
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Database
+*.sql
+*.db
+*.sqlite
+init.sql
+init-db.sql
+migrations/
+
+# IDE & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Node & npm
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Logs
+logs/
+*.log
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+Dockerfile
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Testing
+coverage/
+.phpunit.result.cache
+tests/
+
+# Build artifacts
+dist/
+build/
+
+# OS files
+Thumbs.db
+.AppleDouble
+.LSOverride
+
+# Documentation
+README.md
+docs/
+*.md
+
+# Local config
+docker-compose.local.yml
+config.local.php
+
+# Temporary
+tmp/
+temp/
+*.tmp
+*.bak
+
+# Credentials
+secrets/
+.aws/
+.credentials
+*.key
+*.pem
+.ssh/
+
+# Dependencies (will be installed in image)
+vendor/
+composer.lock

@@ -1,1 +1,76 @@
+# Environment variables
 .env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Composer
+vendor/
+composer.lock
+
+# PHP
+*.log
+
+# Session files
+sessions/
+
+# Temporary files
+tmp/
+temp/
+cache/
+
+# Database & Secrets
+*.sql
+*.db
+*.sqlite
+init.sql
+init-db.sql
+migrations/
+secrets/
+.credentials
+.aws/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# IDE settings
+.phpstorm.meta.php
+_ide_helper.php
+
+# Testing
+coverage/
+.phpunit.result.cache
+test-*.php
+verify-*.php
+
+# Frontend (if used)
+node_modules/
+package-lock.json
+
+# Build artifacts
+dist/
+build/
+*.zip
+
+# Docker overrides
+docker-compose.override.yml
+
+# Sensitive data
+.env.production
+*.key
+*.pem
+.ssh/
+
+# Local development only
+local-db/
+node_modules/
+npm-debug.log
+yarn-error.log

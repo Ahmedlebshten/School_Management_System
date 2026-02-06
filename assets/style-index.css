@@ -1,3 +1,7 @@
+/**
+ * Dashboard/Index Page Styles
+ */
+
 * {
     margin: 0;
     padding: 0;
@@ -5,48 +9,168 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    color: #333;
-    margin: 20px;
-}
-
-/* Container for the content */
-.container {
-    max-width: 900px;
-    margin: 0 auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    color: var(--dark-text);
+    min-height: 100vh;
     padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Header styling */
+.container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 40px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
 h1 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-    color: #4A90E2;
+    font-size: 2.2rem;
+    margin-bottom: 30px;
+    color: var(--primary-color);
+    text-align: center;
 }
 
 h2 {
     font-size: 1.5rem;
-    margin-top: 20px;
-    margin-bottom: 10px;
-    color: #333;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
 }
 
-/* Paragraph styles */
-p {
-    font-size: 1.1rem;
-    margin-bottom: 15px;
+/* Student Info Section */
+.student-info {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    border-left: 4px solid var(--primary-color);
 }
 
-/* Table styles */
-table {
+.student-info p {
+    font-size: 1rem;
+    margin-bottom: 12px;
+    color: var(--dark-text);
+}
+
+.student-info strong {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* Table Styles */
+.marks-table {
     width: 100%;
     border-collapse: collapse;
+    margin: 20px 0;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.marks-table thead {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.marks-table th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.marks-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.95rem;
+}
+
+.marks-table tbody tr {
+    transition: background-color 0.3s ease;
+}
+
+.marks-table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+.marks-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Total Marks */
+.total-marks {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--dark-text);
+    background-color: #f0f8ff;
+    padding: 15px;
+    border-radius: 4px;
+    border-left: 4px solid var(--success-color);
     margin-top: 20px;
 }
+
+.total-marks strong {
+    color: var(--success-color);
+}
+
+/* Actions Section */
+.actions {
+    margin-top: 30px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.actions .btn {
+    flex: 1;
+    min-width: 150px;
+}
+
+.actions form {
+    flex: 1;
+    min-width: 150px;
+}
+
+.actions button {
+    width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        margin: 20px auto;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.3rem;
+    }
+
+    .marks-table th,
+    .marks-table td {
+        padding: 10px;
+        font-size: 0.85rem;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+
+    .actions .btn,
+    .actions form {
+        min-width: unset;
+    }
+}
+
 
 table th, table td {
     padding: 10px;
