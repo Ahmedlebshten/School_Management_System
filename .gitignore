@@ -27,10 +27,8 @@ temp/
 cache/
 
 # Database & Secrets
-*.sql
 *.db
 *.sqlite
-init.sql
 init-db.sql
 migrations/
 secrets/
