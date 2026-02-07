@@ -41,7 +41,7 @@ $total_marks = array_sum(array_column($student_marks, 'marks'));
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../assets/style-index.css">
-  <title>Student Information</title>
+  <title>Student_Information</title>
 </head>
 
 <body>
