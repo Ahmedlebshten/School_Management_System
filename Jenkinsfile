@@ -4,7 +4,7 @@ pipeline {
   environment {
     IMAGE_NAME  = "ahmedlebshten/school_management_system"
     CD_REPO     = "https://github.com/Ahmedlebshten/School_Management_System_CD.git"
-    DEPLOY_FILE = "school/deployment.yaml"
+    DEPLOY_FILE = "school/school-deployment.yaml"
   }
 
   stages {
