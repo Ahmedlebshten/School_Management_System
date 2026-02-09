@@ -32,7 +32,8 @@ INSERT INTO `mohamed` (`id`, `subject`, `marks`, `total_marks`, `percntage`) VAL
 (1, 'math', 97, 100, '97%');
 
 INSERT INTO `student_data` (`id`, `name`, `class`) VALUES
-(1, 'Ahmed', 'First');
+(1, 'Ahmed', 'First'),
+(2, 'Mohamed', 'Second');
 
 -- NOTE: Data is NOT inserted here.
 -- All student data must be added via phpMyAdmin to your existing MySQL database.
