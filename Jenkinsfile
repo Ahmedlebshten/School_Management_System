@@ -71,15 +71,20 @@ pipeline {
       steps {
         sh '''
           cd cd-repo
-
+          test -f ${DEPLOY_FILE} 
           sed -i "s|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${IMAGE_TAG}|g" ${DEPLOY_FILE}
 
           git config user.email "jenkins@ci.local"
           git config user.name "jenkins"
 
+          if git diff --quiet; then
+            echo "No changes to commit, image tag is already up to date"
+          else
+
           git add ${DEPLOY_FILE}
           git commit -m "ci: bump image to ${IMAGE_TAG}"
           git push origin HEAD
+          fi
         '''
       }
     }
