@@ -48,7 +48,7 @@ $total_marks = array_sum(array_column($student_marks, 'marks'));
   <?= require(__DIR__ . '/nav.html');?>
 
   <h1>Student Information</h1>
-  <p>Student Name : <?= htmlspecialchars($student_data['name']) ?></p>
+  <p>Student Name: <?= htmlspecialchars($student_data['name']) ?></p>
   <p>Student ID: <?= htmlspecialchars($student_data['id']) ?></p>
   <p>Student Class: <?= htmlspecialchars($student_data['class']) ?></p>
 
