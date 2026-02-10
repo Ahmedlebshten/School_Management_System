@@ -13,11 +13,11 @@ return [
     
     // Database
     'database' => [
-        'host' => $_ENV['DB_HOST'] ?? 'localhost',
-        'name' => $_ENV['DB_NAME'] ?? 'school_management',
-        'user' => $_ENV['DB_USER'] ?? 'root',
-        'pass' => $_ENV['DB_PASS'] ?? '',
-        'charset' => $_ENV['DB_CHARSET'] ?? 'utf8mb4',
+       'host' => getenv('DB_HOST') ?: 'mysql',
+       'name' => getenv('DB_NAME') ?: 'school',
+       'user' => getenv('DB_USER') ?: 'root',
+       'pass' => getenv('DB_PASS') ?: 'root',
+       'charset' => getenv('DB_CHARSET') ?: 'utf8mb4',
     ],
     
     // Classes
