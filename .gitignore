@@ -60,6 +60,8 @@ build/
 
 # Docker overrides
 docker-compose.override.yml
+docker-compose.override.yml.template
+docker-compose.yml
 
 # Sensitive data
 .env.production
