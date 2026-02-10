@@ -2,7 +2,6 @@
 
 namespace App\Config;
 
-use Dotenv\Dotenv;
 use PDO;
 use PDOException;
 
@@ -16,29 +15,19 @@ class Database
             return self::$conn;
         }
 
-        // Load .env ONLY if exists (local development)
-        $envPath = __DIR__ . '/../../.env';
-        if (file_exists($envPath)) {
-            $dotenv = Dotenv::createImmutable(dirname($envPath));
-            $dotenv->load();
-        }
+        $host = getenv('DB_HOST');
+        $db   = getenv('DB_NAME');
+        $user = getenv('DB_USER');
+        $pass = getenv('DB_PASS');
+        $port = getenv('DB_PORT') ?: 3306;
 
-        $dbHost    = $_ENV['DB_HOST'] ?? getenv('DB_HOST');
-        $dbName    = $_ENV['DB_NAME'] ?? getenv('DB_NAME');
-        $dbUser    = $_ENV['DB_USER'] ?? getenv('DB_USER');
-        $dbPass    = $_ENV['DB_PASS'] ?? getenv('DB_PASS');
-        $dsn = "mysql:host={$dbHost};dbname={$dbName};charset=utf8mb4";
-
-
-        $options = [
-           PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4",
-           PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-           PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-];
-
+        $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
 
         try {
-            self::$conn = new PDO($dsn, $dbUser, $dbPass, $options);
+            self::$conn = new PDO($dsn, $user, $pass, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ]);
         } catch (PDOException $e) {
             die("Database connection failed: " . $e->getMessage());
         }
