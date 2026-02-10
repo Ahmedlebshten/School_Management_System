@@ -1,25 +1,20 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
 
-use Dotenv\Dotenv;
+$host = getenv('DB_HOST') ?: 'mysql';
+$db   = getenv('DB_NAME') ?: 'school';
+$user = getenv('DB_USER') ?: 'root';
+$pass = getenv('DB_PASS') ?: 'root';
+$charset = getenv('DB_CHARSET') ?: 'utf8mb4';
 
-// Load .env
-$dotenv = Dotenv::createImmutable(__DIR__ . '/../');
-$dotenv->load();
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 
-// Read from .env
-$dsn = "mysql:host=" . $_ENV['DB_HOST'] . ";dbname=" . $_ENV['DB_NAME'] . ";charset=" . $_ENV['DB_CHARSET'];
-$user = $_ENV['DB_USER'];
-$pass = $_ENV['DB_PASS'];
-
-$options = array(
-    PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES ' . $_ENV['DB_CHARSET'],
-);
+$options = [
+    PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES $charset",
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+];
 
 try {
     $conn = new PDO($dsn, $user, $pass, $options);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch(PDOException $e) {
-    echo "failed: " . $e->getMessage();
+} catch (PDOException $e) {
+    die("failed: " . $e->getMessage());
 }
-?>
