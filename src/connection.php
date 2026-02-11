@@ -1,9 +1,13 @@
 <?php
 
-$host = getenv('DB_HOST') ?: 'mysql';
-$db   = getenv('DB_NAME') ?: 'school';
-$user = getenv('DB_USER') ?: 'root';
-$pass = getenv('DB_PASS') ?: 'root';
+// Read database configuration from environment variables only (no fallbacks).
+// In Kubernetes, these are provided by ConfigMaps/Secrets.
+// In Docker Compose, these are in the services environment section.
+// If any variable is missing, the connection will fail with a clear error.
+$host = getenv('DB_HOST');
+$db   = getenv('DB_NAME');
+$user = getenv('DB_USER');
+$pass = getenv('DB_PASS');
 $charset = getenv('DB_CHARSET') ?: 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";

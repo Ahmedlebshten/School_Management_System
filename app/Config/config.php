@@ -12,11 +12,15 @@ return [
     'timezone' => 'Africa/Cairo',
     
     // Database
+    // NOTE: Database configuration is read from environment variables only.
+    // In Kubernetes, these are passed via ConfigMaps and Secrets.
+    // In Docker Compose, these are passed in the services environment section.
+    // DO NOT provide fallback values - this ensures proper configuration in all environments.
     'database' => [
-       'host' => getenv('DB_HOST') ?: 'mysql',
-       'name' => getenv('DB_NAME') ?: 'school',
-       'user' => getenv('DB_USER') ?: 'root',
-       'pass' => getenv('DB_PASS') ?: 'root',
+       'host' => getenv('DB_HOST'),
+       'name' => getenv('DB_NAME'),
+       'user' => getenv('DB_USER'),
+       'pass' => getenv('DB_PASS'),
        'charset' => getenv('DB_CHARSET') ?: 'utf8mb4',
     ],
     

@@ -3,20 +3,17 @@ require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../app/bootstrap.php';
 
 use App\Classes\Auth;
+use App\Config\Database;
+use PDO;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 Auth::requireLogin();
 
 // ============================================
-// DIRECT PDO CONNECTION (Same as test-db.php)
+// DATABASE CONNECTION via Database class
 // ============================================
-try {
-    $pdo = new PDO('mysql:host=db;dbname=school', 'root', 'password');
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Database connection failed: " . $e->getMessage());
-}
+$pdo = Database::getInstance();
 
 // Get student ID from session
 $student_id = $_SESSION['student_id'];

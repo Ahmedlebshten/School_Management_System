@@ -1,10 +1,19 @@
 <?php
 /**
  * SIMPLE: Show what's actually in the database tables
+ * Uses environment variables for database configuration (no fallbacks)
  */
 
 try {
-    $pdo = new PDO('mysql:host=db;dbname=school', 'root', 'password');
+    // Read database credentials from environment variables only
+    $host = getenv('DB_HOST');
+    $db   = getenv('DB_NAME');
+    $user = getenv('DB_USER');
+    $pass = getenv('DB_PASS');
+    $charset = getenv('DB_CHARSET') ?: 'utf8mb4';
+    
+    $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+    $pdo = new PDO($dsn, $user, $pass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
     echo "═══════════════════════════════════════════════════════════════\n";

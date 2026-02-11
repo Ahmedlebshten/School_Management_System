@@ -6,6 +6,17 @@
 # 
 # Usage:
 # docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Environment Variables:
+# This application reads ALL database configuration from environment variables:
+# - DB_HOST: MySQL hostname/service name (e.g., 'mysql' in Kubernetes)
+# - DB_NAME: Database name (e.g., 'school')
+# - DB_USER: Database user (e.g., 'root')
+# - DB_PASS: Database password
+# - DB_CHARSET: Database charset (optional, defaults to 'utf8mb4')
+#
+# In Docker Compose, pass these via: docker-compose -e DB_HOST=mysql ...
+# In Kubernetes, pass these via ConfigMaps/Secrets and mount in Deployment spec
 # ============================================================
 
 version: '3.8'
