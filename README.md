@@ -8,7 +8,7 @@ A modern, refactored PHP-based school management system for viewing student info
 - **Optimized Docker image**: Reduced size from 979MB → 834MB (14.8% reduction)
 - **Production-ready Dockerfile**: Layer optimization, minimal base, all PHP extensions working
 - **Docker development setup**: Hot-reload `docker-compose.override.yml` for live code changes
-- **Image available on Docker Hub**: `ahmedlebshten/school_management_system:1`
+- **Image available on Docker Hub**: `ahmedlebshten/school_management_system:image-tag`
 
 ### 💾 Database & Data Fixes
 - **Fixed single-row display bug**: Changed from filtered WHERE queries to fetching all student marks
@@ -123,7 +123,7 @@ CREATE TABLE first (
 
 ## Usage
 
-Access the application at: `http://localhost/School%20Management%20System%20(new)/public/home.php`
+Access the application at: `http://localhost/School_Management_System/public/home.php`
 
 ### Student Login
 

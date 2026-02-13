@@ -24,6 +24,7 @@ pipeline {
       }
     }
 
+// Clone the CD repo using credentials stored in Jenkins and update the deployment file with the new image tag
     stage('Clone CD Repo') {
       steps {
         withCredentials([
@@ -67,6 +68,7 @@ pipeline {
       }
     }
 
+// Update the deployment file in the CD repo with the new image tag and push the changes back to GitHub
     stage('Update CD Repo (bump image tag)') {
       steps {
         sh '''
