@@ -48,11 +48,11 @@ ____
 
 ## ECR Authentication
 
-### Jenkins authenticates to ECR using:
+#### Jenkins authenticates to ECR using:
 ```
 aws ecr get-login-password --region us-east-1
 ```
-### Nodes are configured with:
+#### Nodes are configured with:
 ```
 AmazonEC2ContainerRegistryReadOnly
 ```
