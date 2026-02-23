@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:80"     # Expose port 80 of the container to port 8000 on the host
+    environment:
+      DB_HOST: db
+      DB_NAME: ${DB_NAME:-school}
+      DB_USER: ${DB_USER:-root}
+      DB_PASS: ${DB_PASS:-password}
+      DB_CHARSET: ${DB_CHARSET:-utf8mb4}
+    depends_on:
+      db:
+        condition: service_healthy    # Ensure the database is healthy before starting the app 
+    # Do NOT mount host directories for production
+    # Development volume mounts can be added via docker-compose.override.yml
+    networks:
+      - school-network
+
+  db:
+    image: mysql:8.0
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-school}
+      MYSQL_ROOT_PASSWORD: ${DB_PASS:-password}
+      MYSQL_ROOT_HOST: '%'
+    volumes:
+      - db-data:/var/lib/mysql      # Persistent data storage for the database , db-data the folder in host machine in docker file system (name of the volume) and /var/lib/mysql is the folder in container 
+      # Mount init script as read-only volume
+      # Only mounted if the file exists; safe for production
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - school-network
+
+volumes:
+  db-data:
+    driver: local
+
+networks:
+  school-network:      # Define a custom bridge network for the application services 
+    driver: bridge
