@@ -74,7 +74,7 @@
     <div class="container">
         <div class="section">
             <h2>About Our School</h2>
-            <p>Welcome to our school system. We are dedicated to providing an outstanding educational experience for
+            <p>Welcome To our school system. We are dedicated to providing an outstanding educational experience for
                 students of all ages. Our mission is to foster a love of learning, to provide a supportive and inclusive
                 environment, and to prepare our students for a successful future.</p>
             <p>We believe in a holistic approach to education, combining rigorous academics with extracurricular
