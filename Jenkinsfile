@@ -2,7 +2,12 @@ pipeline {
   agent any
 
   environment {
-    IMAGE_NAME  = "ahmedlebshten/school_management_system"
+    AWS_REGION  = "us-east-1"
+    AWS_ACCOUNT = "731628759499"
+    ECR_REPO    = "school-management-system"
+
+    IMAGE_NAME  = "${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}"
+
     CD_REPO     = "https://github.com/Ahmedlebshten/School_Management_System_CD.git"
     DEPLOY_FILE = "school/school-deployment.yaml"
   }
@@ -24,7 +29,6 @@ pipeline {
       }
     }
 
-// Clone the CD repo using credentials stored in Jenkins and update the deployment file with the new image tag
     stage('Clone CD Repo') {
       steps {
         withCredentials([
@@ -34,67 +38,65 @@ pipeline {
             passwordVariable: 'GIT_PASS'
           )
         ]) {
-          sh '''
+          sh """
             rm -rf cd-repo
             git clone https://${GIT_USER}:${GIT_PASS}@github.com/Ahmedlebshten/School_Management_System_CD.git cd-repo
-          '''
+          """
         }
       }
     }
 
     stage('Build Docker Image') {
       steps {
-        sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+        sh """
+          docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+        """
       }
     }
 
-    stage('Docker Login') {
+    stage('ECR Login') {
       steps {
-        withCredentials([
-          usernamePassword(
-            credentialsId: 'dockerhub-credentials',
-            usernameVariable: 'DOCKER_USER',
-            passwordVariable: 'DOCKER_PASS'
-          )
-        ]) {
-          sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-        }
+        sh """
+          aws ecr get-login-password --region ${AWS_REGION} \
+          | docker login --username AWS --password-stdin ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com
+        """
       }
     }
 
     stage('Push Docker Image') {
       steps {
-        sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
+        sh """
+          docker push ${IMAGE_NAME}:${IMAGE_TAG}
+        """
       }
     }
 
-// Update the deployment file in the CD repo with the new image tag and push the changes back to GitHub
     stage('Update CD Repo (bump image tag)') {
       steps {
-        sh '''
+        sh """
           cd cd-repo
-          test -f ${DEPLOY_FILE} 
-          sed -i "s|image: ${IMAGE_NAME}:.*|image: ${IMAGE_NAME}:${IMAGE_TAG}|g" ${DEPLOY_FILE}
+          test -f ${DEPLOY_FILE}
+
+          sed -i "s|image: .*|image: ${IMAGE_NAME}:${IMAGE_TAG}|g" ${DEPLOY_FILE}
 
           git config user.email "jenkins@ci.local"
           git config user.name "jenkins"
 
           if git diff --quiet; then
-            echo "No changes to commit, image tag is already up to date"
+            echo "No changes to commit"
           else
-
-          git add ${DEPLOY_FILE}
-          git commit -m "ci: bump image to ${IMAGE_TAG}"
-          git push origin HEAD
+            git add ${DEPLOY_FILE}
+            git commit -m "ci: bump image to ${IMAGE_TAG}"
+            git push origin HEAD
           fi
-        '''
+        """
       }
     }
   }
 
   post {
     success {
-      echo "✅ Image ${IMAGE_NAME}:${IMAGE_TAG} pushed and CD repo updated"
+      echo "✅ Image ${IMAGE_NAME}:${IMAGE_TAG} pushed to ECR and CD repo updated"
     }
     failure {
       echo "❌ CI failed"
