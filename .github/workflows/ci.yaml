@@ -1,0 +1,70 @@
+name: CI - Build & Push to ECR
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: write
+
+env:
+  AWS_REGION: us-east-1
+  AWS_ACCOUNT: 731628759499
+  ECR_REPO: school-management-system
+  DEPLOY_FILE: school/school-deployment.yaml
+  CD_REPO: Ahmedlebshten/School_Management_System_CD
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Generate Image Tag
+        run: echo "IMAGE_TAG=${{ github.run_number }}" >> $GITHUB_ENV
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::731628759499:role/GitHubActionsECRRole
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        run: |
+          aws ecr get-login-password --region $AWS_REGION \
+          | docker login --username AWS --password-stdin $AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com
+
+      - name: Build Docker Image
+        run: |
+          IMAGE_URI=$AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
+          docker build -t $IMAGE_URI .
+          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+
+      - name: Push Docker Image
+        run: |
+          docker push $IMAGE_URI
+
+      - name: Clone CD Repo
+        run: |
+          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ env.CD_REPO }} cd-repo
+
+      - name: Update CD Repo (bump image tag)
+        run: |
+          cd cd-repo
+
+          sed -i "s|image: .*|image: $IMAGE_URI|g" $DEPLOY_FILE
+
+          git config user.email "github-actions@ci.local"
+          git config user.name "github-actions"
+
+          if git diff --quiet; then
+            echo "No changes to commit"
+          else
+            git add $DEPLOY_FILE
+            git commit -m "ci: bump image to $IMAGE_TAG"
+            git push origin HEAD
+          fi
