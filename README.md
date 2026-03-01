@@ -60,7 +60,6 @@ The pipeline includes validation and testing stages:
 
 If any validation, test, or security scan fails, the pipeline stops immediately.
 
-⸻
 
 ## 🔐 Secure Authentication Model (OIDC)
 
