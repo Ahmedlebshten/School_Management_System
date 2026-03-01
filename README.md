@@ -1,4 +1,4 @@
-# School Management System – CI Repository with GitHub Actions
+# School Management System – CI (GitHub Actions + ECR)
 
 This repository represents the CI layer of the School Management System DevOps architecture.
 
