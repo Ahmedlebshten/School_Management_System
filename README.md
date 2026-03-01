@@ -15,18 +15,18 @@ ____
 ## ⚙️ CI Pipeline Overview (GitHub Actions)
 
 On every push to the main branch, the workflow performs:
-	1.	Checkout source code
-	2.	Setup PHP environment
-	3.	Install Composer dependencies
-	4.	Validate composer.json
-	5.	Run PHP lint (syntax validation)
-	6.	Execute PHPUnit tests (if present)
-	7.	Generate image tag (GitHub run number)
-	8.	Authenticate to AWS using OIDC
-	9.	Build Docker image
-	10.	Scan image using Trivy (security scan)
-	11.	Push image to private Amazon ECR
-	12.	Update image tag in CD repository
+- Checkout source code
+- Setup PHP environment
+- Install Composer dependencies
+- Validate composer.json
+- Run PHP lint (syntax validation)
+- Execute PHPUnit tests (if present)
+- Generate image tag (GitHub run number)
+- Authenticate to AWS using OIDC
+- Build Docker image
+- Scan image using Trivy (security scan)
+- Push image to private Amazon ECR
+- Update image tag in CD repository
 ____
 
 ## 🔄 CI Flow
