@@ -1,4 +1,4 @@
-# School Management System – CI Repository with Jenkins
+# School Management System – CI Repository with GitHub Actions
 
 This repository represents the CI layer of the School Management System DevOps architecture.
 
