@@ -59,7 +59,7 @@ The pipeline includes validation and testing stages:
 - Docker image vulnerability scanning (Trivy)
 
 If any validation, test, or security scan fails, the pipeline stops immediately.
-
+____
 
 ## 🔐 Secure Authentication Model (OIDC)
 
