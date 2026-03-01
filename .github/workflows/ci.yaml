@@ -1,4 +1,4 @@
-name: CI - Build & Push to ECR
+name: CI - Build, Test & Push to ECR
 
 on:
   push:
@@ -21,41 +21,116 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+      # -------------------------
+      # Checkout
+      # -------------------------
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
+      # -------------------------
+      # Setup PHP
+      # -------------------------
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo_mysql
+          coverage: none
+
+      # -------------------------
+      # Install Dependencies
+      # -------------------------
+      - name: Install Dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      # -------------------------
+      # Validate Composer
+      # -------------------------
+      - name: Validate Composer
+        run: composer validate
+
+      # -------------------------
+      # PHP Lint
+      # -------------------------
+      - name: PHP Lint
+        run: |
+          find . -type f -name "*.php" -exec php -l {} \;
+
+      # -------------------------
+      # Run Tests (if exist)
+      # -------------------------
+      - name: Run Tests
+        run: |
+          if [ -f vendor/bin/phpunit ]; then
+            vendor/bin/phpunit
+          else
+            echo "No PHPUnit tests found, skipping..."
+          fi
+
+      # -------------------------
+      # Generate Image Tag
+      # -------------------------
       - name: Generate Image Tag
         run: echo "IMAGE_TAG=${{ github.run_number }}" >> $GITHUB_ENV
 
-      - name: Configure AWS Credentials (OIDC)
+      # -------------------------
+      # Configure AWS Credentials (OIDC)
+      # -------------------------
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::731628759499:role/GitHubActionsECRRole
           aws-region: ${{ env.AWS_REGION }}
 
+      # -------------------------
+      # Login to ECR
+      # -------------------------
       - name: Login to ECR
         run: |
           aws ecr get-login-password --region $AWS_REGION \
           | docker login --username AWS --password-stdin $AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com
 
+      # -------------------------
+      # Build Docker Image
+      # -------------------------
       - name: Build Docker Image
         run: |
           IMAGE_URI=$AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
           docker build -t $IMAGE_URI .
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
 
-      - name: Push Docker Image
-        run: |
-          docker push $IMAGE_URI
+      # -------------------------
+      # Scan Docker Image (Trivy)
+      # -------------------------
+      - name: Scan Docker Image
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: ${{ env.IMAGE_URI }}
+          format: table
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
 
+      # -------------------------
+      # Push Docker Image
+      # -------------------------
+      - name: Push Docker Image
+        run: docker push $IMAGE_URI
+
+      # -------------------------
+      # Clone CD Repo
+      # -------------------------
       - name: Clone CD Repo
         run: |
           git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ env.CD_REPO }} cd-repo
 
-      - name: Update CD Repo (bump image tag)
+      # -------------------------
+      # Update CD Repo (bump image tag)
+      # -------------------------
+      - name: Update CD Repo
         run: |
           cd cd-repo
-
           sed -i "s|image: .*|image: $IMAGE_URI|g" $DEPLOY_FILE
 
           git config user.email "github-actions@ci.local"
