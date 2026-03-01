@@ -1,48 +1,80 @@
 # School Management System – CI Repository
 
-## CI Pipeline Overview (GitHub Actions)
+This repository represents the CI layer of the School Management System DevOps architecture.
 
-1. Checkout source code
-2. Generate image tag (GitHub run number)
-3. Configure AWS credentials using OIDC
-4. Build Docker image
-5. Authenticate to AWS ECR
-6. Push image to ECR
-7. Update image tag in CD repository (GitOps flow)
-
+## It is responsible for:
+- Validating application code
+- Building Docker images
+- Performing security scans
+- Pushing images to private Amazon ECR
+- Updating the CD repository (GitOps flow)
+  
+CI is fully automated using GitHub Actions.
 ____
 
-## CI Workflow
+## ⚙️ CI Pipeline Overview (GitHub Actions)
 
-CI is fully automated using **GitHub Actions**.
-
-Trigger:
-Push to main branch
+On every push to the main branch, the workflow performs:
+	1.	Checkout source code
+	2.	Setup PHP environment
+	3.	Install Composer dependencies
+	4.	Validate composer.json
+	5.	Run PHP lint (syntax validation)
+	6.	Execute PHPUnit tests (if present)
+	7.	Generate image tag (GitHub run number)
+	8.	Authenticate to AWS using OIDC
+	9.	Build Docker image
+	10.	Scan image using Trivy (security scan)
+	11.	Push image to private Amazon ECR
+	12.	Update image tag in CD repository
 ____
 
-## Flow
-Code Push → GitHub Actions → Docker Build → Push to ECR → Update Deployment YAML → ArgoCD Sync
+## 🔄 CI Flow
+
+```
+Code Push
+   ↓
+GitHub Actions
+   ↓
+Build & Test
+   ↓
+Docker Build
+   ↓
+Trivy Scan
+   ↓
+Push to ECR
+   ↓
+Update CD Repo
+   ↓
+ArgoCD Sync
+```
 ____
 
-## Docker & Image Management
-- Production-ready Dockerfile
-- Optimized image build
-- Automated image tagging
-- Secure authentication to AWS via OIDC (no static AWS keys)
-- AWS ECR private repository integration
-____
+## 🧪 Code Quality & Testing
 
-## Authentication Model (Secure OIDC)
+The pipeline includes validation and testing stages:
+- Composer dependency validation
+- PHP syntax checking (lint)
+- PHPUnit execution (if tests exist)
+- Docker image vulnerability scanning (Trivy)
 
-GitHub Actions assumes an AWS IAM Role using:
+If any validation, test, or security scan fails, the pipeline stops immediately.
 
+⸻
+
+## 🔐 Secure Authentication Model (OIDC)
+
+GitHub Actions authenticates to AWS using:
 - OpenID Connect (OIDC)
-- Temporary credentials
-- No long-lived access keys
+- Temporary IAM role assumption
+- No static AWS credentials
 - Least-privilege IAM permissions
 
-ECR Login is handled automatically via:
+Authentication is handled using:
+```
 aws-actions/configure-aws-credentials
+```
+This eliminates the need for long-lived AWS access keys.
 ____
 
 ## ECR Repository:
@@ -53,11 +85,6 @@ ____
 ## Example:
 ```
 731628759499.dkr.ecr.us-east-1.amazonaws.com/school-management-system:42
-```
-
-## CI Flow
-```
-Code Push → Jenkins Build → Docker Build → Push to ECR → Update Deployment YAML
 ```
 ____
 
@@ -76,35 +103,20 @@ ____
 ```
 ____
 
-## ECR Authentication
-
-#### Jenkins authenticates to ECR using:
-```
-aws ecr get-login-password --region us-east-1
-```
-#### Nodes are configured with:
-```
-AmazonEC2ContainerRegistryReadOnly
-```
-
-policy to allow pulling images from ECR.
-____
-
 ## Requirements
-- PHP 7.4+
+- PHP 8.x
 - Composer
 - Docker
 - GitHub Actions
-- Jenkins
-- AWS CLI
-- IAM Role with ECR permissions
+- AWS IAM Role configured for OIDC
+- Amazon ECR repository
 - OIDC provider configured in AWS
 ____
 
 ## Purpose
-- Automate Docker build & push
-- Secure cloud authentication
-- Manage image versioning automatically
-- Integrate GitHub Actions with AWS ECR
-- Enable GitOps deployment via ArgoCD
-- Production-grade CI architecture
+- Automate application validation and testing
+- Secure Docker image build & push
+- Eliminate static cloud credentials
+- Maintain automated image versioning
+- Enable GitOps-based deployment via ArgoCD
+- Provide production-grade CI architecture
